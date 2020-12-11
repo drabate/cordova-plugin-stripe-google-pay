@@ -27,6 +27,9 @@ import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -79,6 +82,7 @@ public class StripeGooglePay extends CordovaPlugin {
         switch (resultCode) {
           case Activity.RESULT_OK:
             PaymentData paymentData = PaymentData.getFromIntent(data);
+            Gson gson = new Gson();
             // You can get some data on the user's card, such as the brand and last 4 digits
             CardInfo info = paymentData.getCardInfo();
             // You can also pull the user address from the PaymentData object.
@@ -86,16 +90,47 @@ public class StripeGooglePay extends CordovaPlugin {
             // This is the raw JSON string version of your Stripe token.
             String rawToken = paymentData.getPaymentMethodToken().getToken();
 
-            // Now that you have a Stripe token object, charge that by using the id
-            Token stripeToken = Token.fromString(rawToken);
-            if (stripeToken != null) {
-              // This chargeToken function is a call to your own server, which should then connect
-              // to Stripe's API to finish the charge.
-              //chargeToken(stripeToken.getId());
-              this.callback.success(stripeToken.getId());
-            } else {
-              this.callback.error("An error occurred");
-            }
+              JsonObject addressObject = new JsonObject();
+                addressObject.addProperty("street",(address.getAddress1() +" "+address.getAddress2()+" "+address.getAddress3()+" "+address.getAddress4()+" "+address.getAddress5()).trim());
+                addressObject.addProperty("administrativeArea",address.getAdministrativeArea());
+                addressObject.addProperty("company",address.getCompanyName());
+                addressObject.addProperty("country",address.getCountryCode());
+                addressObject.addProperty("mail",address.getEmailAddress());
+                addressObject.addProperty("city",address.getLocality());
+                addressObject.addProperty("name",address.getName());
+                addressObject.addProperty("phone",address.getPhoneNumber());
+                addressObject.addProperty("postalCode",address.getPostalCode());
+                addressObject.addProperty("sortingCode",address.getSortingCode());
+              UserAddress billingAddress = info.getBillingAddress();
+              JsonObject billingAddressObject = new JsonObject();
+                billingAddressObject.addProperty("street",(billingAddress.getAddress1() +" "+billingAddress.getAddress2()+" "+billingAddress.getAddress3()+" "+billingAddress.getAddress4()+" "+billingAddress.getAddress5()).trim());
+                billingAddressObject.addProperty("administrativeArea",billingAddress.getAdministrativeArea());
+                billingAddressObject.addProperty("company",billingAddress.getCompanyName());
+                billingAddressObject.addProperty("country",billingAddress.getCountryCode());
+                billingAddressObject.addProperty("mail",billingAddress.getEmailAddress());
+                billingAddressObject.addProperty("city",billingAddress.getLocality());
+                billingAddressObject.addProperty("name",billingAddress.getName());
+                billingAddressObject.addProperty("phone",billingAddress.getPhoneNumber());
+                billingAddressObject.addProperty("postalCode",billingAddress.getPostalCode());
+                billingAddressObject.addProperty("sortingCode",billingAddress.getSortingCode());
+              String cardInfoJson = gson.toJson(info);
+              String addressJson = gson.toJson(addressObject);
+              String billingAddressJson = gson.toJson(billingAddressObject);
+              JsonObject resultJson = new JsonObject();
+
+              // Now that you have a Stripe token object, charge that by using the id
+              Token stripeToken = Token.fromString(rawToken);
+              resultJson.addProperty("stripeToken",stripeToken.getId());
+              resultJson.addProperty("shipping",addressJson);
+              resultJson.addProperty("billingAddress",billingAddressJson);
+              if (stripeToken != null) {
+                // This chargeToken function is a call to your own server, which should then connect
+                // to Stripe's API to finish the charge.
+                //chargeToken(stripeToken.getId());
+                this.callback.success(gson.toJson(resultJson));
+              } else {
+                this.callback.error("An error occurred");
+              }
             break;
           case Activity.RESULT_CANCELED:
             this.callback.error("Payment cancelled");
@@ -201,9 +236,14 @@ public class StripeGooglePay extends CordovaPlugin {
                         WalletConstants.CARD_NETWORK_DISCOVER,
                         WalletConstants.CARD_NETWORK_VISA,
                         WalletConstants.CARD_NETWORK_MASTERCARD))
-                    .build());
+                    .setBillingAddressRequired(true)
+                    .build())
+            .setEmailRequired(true)
+            .setShippingAddressRequired(true)
+            .setPhoneNumberRequired(true);
 
     request.setPaymentMethodTokenizationParameters(this.createTokenisationParameters());
     return request.build();
   }
 }
+

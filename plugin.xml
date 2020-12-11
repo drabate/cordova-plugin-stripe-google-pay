@@ -2,16 +2,16 @@
 <plugin
   xmlns="http://apache.org/cordova/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
-  id="cordova-plugin-stripe-google-pay"
-  version="0.0.1"
+  id="cordova-plugin-stripe-google-pay-address"
+  version="0.1.0"
   >
-    <name>cordova-plugin-stripe-google-pay</name>
+    <name>cordova-plugin-stripe-google-pay-address</name>
     <description>Cordova plugin for Stripe - Google Pay integration</description>
     <license>MIT</license>
     <keywords>cordova,stripe,google,pay</keywords>
-    <author>Asanga Dev</author>
-    <repo>https://github.com/asangadev/cordova-plugin-stripe-google-pay.git</repo>
-    <issue>https://github.com/asangadev/cordova-plugin-stripe-google-pay/issues</issue>
+    <author>Etienne Gabard</author>
+    <repo>https://github.com/drabate/cordova-plugin-stripe-google-pay-address.git</repo>
+    <issue>https://github.com/drabate/cordova-plugin-stripe-google-pay-address/issues</issue>
     <js-module src="www/stripe-google-pay.js" name="sgap">
         <clobbers target="sgap" />
     </js-module>
@@ -34,5 +34,6 @@
         <framework src="com.google.android.gms:play-services-wallet:16.0.0" />
         <framework src="com.android.support:support-v4:27.0.2" />
         <framework src="com.android.support:appcompat-v7:24.1.1" />
+        <framework src="com.google.code.gson:gson:2.8.6" />
     </platform>
 </plugin>

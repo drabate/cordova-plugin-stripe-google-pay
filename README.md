@@ -1,6 +1,8 @@
-# cordova-plugin-stripe-google-pay
+# cordova-plugin-stripe-google-pay-address
 
-> Cordova plugin for Stripe - Goole Pay integration
+> Cordova plugin for Stripe - Google Pay integration with Billing and Shipping addresses
+
+based on https://github.com/asangadev/cordova-plugin-stripe-google-pay
 
 ## Notes
 
@@ -12,10 +14,11 @@ This plugin will add these dependencies to your build.gradle file:
     com.google.android.gms:play-services-wallet:16.0.0
     com.android.support:support-v4:27.0.2
     com.android.support:appcompat-v7:24.1.1
+    com.google.code.gson:gson:2.8.6
 
 ## Installation
 
-    cordova plugin add cordova-plugin-stripe-google-pay
+    cordova plugin add cordova-plugin-stripe-google-pay-address
 
 ## Quick Example
 
@@ -24,8 +27,8 @@ Run below on onDeviceReady function
 ```javascript
 sgap.setKey('pk_test_Ldy7TLYtmnsv1VrI4ULriWSd').then(function(output) {
   sgap.isReadyToPay().then(function() {
-    sgap.requestPayment(1000, 'AUD').then(function(token) {
-      alert(token);
+    sgap.requestPayment(1000, 'AUD').then(function(paymentData) {
+      alert(paymentData);
     }).catch(function(err) {
       alert(err);
     });
@@ -66,7 +69,7 @@ sgap.requestPayment(totalPrice, currency)
 -   Initiates the payment journey for the user to complete.
 -   `totalPrice` must be a string representation of the total price - e.g. for £10.78, it would be `10.78`
 -   `currency` must be a valid ISO 4217 currency code for the transaction
--   Resolves when the journey is complete, with the stripe token
+-   Resolves when the journey is complete, with the payment data (stripeToken, shipping address and billing address)
 -   Rejects if an error occurs
 
 ## Switch to PRODUCTION
