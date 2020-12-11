@@ -18,7 +18,7 @@ This plugin will add these dependencies to your build.gradle file:
 
 ## Installation
 
-    cordova plugin add cordova-plugin-stripe-google-pay-address
+    cordova plugin add https://github.com/drabate/cordova-plugin-stripe-google-pay-address.git
 
 ## Quick Example
 
